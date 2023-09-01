@@ -60,6 +60,14 @@ def rev_geocode(lat: float, lon: float):
         location = geolocator.reverse(f"{lat}, {lon}")
         rev_geocode_cache[cache_key] = location
         print(f"Reverse geocode miss for {lat}, {lon}: {location}")
+
+        if "address" in location.raw:
+            address = location.raw["address"]
+            if "suburb" in address:
+                suburb = address["suburb"]
+            city = address["city"]
+            state = location.raw["address"]["state"]
+            location.raw["display_name"] = ", ".join([suburb, city, state])
     return rev_geocode_cache[cache_key]
 
 
@@ -101,6 +109,9 @@ def on_connect(client, userdata, flags, rc):
     # MQTT isn't really an RPC framework, so we use two topics
     topic = MQTT["topic"]
     client.subscribe(f"{topic}/request")
+
+    topic = MQTT["topic"]
+    client.publish(f"{topic}/debug", payload="MQTT Weather Started")
 
 
 def on_message(client, userdata, msg):
