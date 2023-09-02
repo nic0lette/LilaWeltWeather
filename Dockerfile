@@ -19,6 +19,7 @@ COPY requirements.txt /tmp/
 RUN pip install --requirement /tmp/requirements.txt
 COPY weather.service /etc/systemd/system/
 RUN systemctl enable weather
+COPY config.toml /app/
 COPY *.py /app/
 
 CMD [ "/sbin/init" ]
