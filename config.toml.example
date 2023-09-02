@@ -1,0 +1,26 @@
+[mqtt]
+client_id = "mqtt-weather"
+broker = "mqtt.example.com"
+port = 8883
+user = "user"
+password = "password"
+topic = "weather"
+
+[api]
+user_agent = "MQTT Weather (change-me@example.com"
+
+# List of custom locations
+
+[[locations]]
+name = "london bridge"
+lat = 51.5078788
+lon = -0.0877321
+display_name = "London Bridge"
+
+# A single place can have multiple names
+
+[[locations]]
+names = ["best tea", "spiffiest tea"]
+lat = 53.8804232
+lon = -1.8268216
+display_name = "Yorkshire Tea"
