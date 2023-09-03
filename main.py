@@ -16,13 +16,13 @@ from dotdict import DotDict
 geocoder_url = "https://geocode.maps.co/search"
 weather_url = "https://api.met.no/weatherapi/locationforecast/2.0/complete.json"
 
-global_config = None
+global_config = DotDict()
 
 # Global shared instance for converting lat/lon to a timezone
 timezone_finder = TimezoneFinder()
 
 # Similar for geocoding
-geolocator = None
+geolocator: Nominatim = None
 
 # Cache for place -> location lookups
 geocode_cache = {}
@@ -94,12 +94,21 @@ def get_forecast(lat: float, lon: float):
 
 
 def place_request(place: str) -> dict:
-    location = geocode_place(place)
+    try:
+        location = geocode_place(place)
+    except Exception as e:
+        return {
+            "topic": "error",
+            "error": "GEOCODE_ERROR",
+            "msg": f"Failed to geocode {place}: {e}"
+        }
+
     lat = float(location.lat)
     lon = float(location.lon)
     timezone = timezone_finder.timezone_at(lat=lat, lng=lon)
     forecast = get_forecast(lat, lon)
     return {
+        "topic": "place_request",
         "location": location,
         "timezone": timezone,
         "forecast": forecast,
@@ -107,10 +116,19 @@ def place_request(place: str) -> dict:
 
 
 def point_request(lat: float, lon: float) -> dict:
-    location = rev_geocode(lat, lon)
+    try:
+        location = rev_geocode(lat, lon)
+    except Exception as e:
+        return {
+            "topic": "error",
+            "error": "GEOCODE_ERROR",
+            "msg": f"Failed to reverse-geocode {lat}, {lon}: {e}"
+        }
+
     timezone = timezone_finder.timezone_at(lat=lat, lng=lon)
     forecast = get_forecast(lat, lon)
     return {
+        "topic": "point_request",
         "location": location,
         "timezone": timezone,
         "forecast": forecast,
@@ -136,7 +154,8 @@ def on_message(client, userdata, msg):
     except json.JSONDecodeError as ex:
         print(f"Error decoding request: {ex}")
         error = {
-            "payload": f"Error parsing payload: {msg.payload}"
+            "topic": "error",
+            "msg": f"Error parsing payload: {msg.payload}"
         }
         client.publish(f"{topic}/response", payload=json.dumps(error))
         return
@@ -150,7 +169,8 @@ def on_message(client, userdata, msg):
     else:
         print(f"Unknown request: {req}")
         response = {
-            "type": "error"
+            "topic": "error",
+            "msg": f"Unknown request: {req}"
         }
     client.publish(f"{topic}/response", payload=json.dumps(response))
 
