@@ -71,14 +71,18 @@ def rev_geocode(lat: float, lon: float):
         # "123 Princes Street, Edinburgh EH2 4AD United Kingdom"
         # which is just way too detailed for what is needed.
         if "address" in location:
-            address = location.address
-            if "suburb" in address:
-                suburb = address.suburb
-            else:
-                suburb = None
-            city = address.city
-            state = address.state
-            location.display_name = ", ".join([suburb, city, state])
+            try:
+                address = location.address
+                if "suburb" in address:
+                    suburb = address.suburb
+                else:
+                    suburb = None
+                city = address.city
+                state = address.state
+                location.display_name = ", ".join([suburb, city, state])
+            except Exception:
+                # Temp work around for places that don't have cities
+                pass
 
         rev_geocode_cache[cache_key] = location
         print(f"Reverse geocode miss for {lat}, {lon}: {location}")
