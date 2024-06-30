@@ -1,20 +1,9 @@
 # LilaWeltWeather
 
-MQTT Weather forecast API
+Weather forecast REST API
 
 ## Usage
 
-To use this, create a file named `config.py` in the form:
-
-```python
-USER_AGENT = "User-Agent for met.no (email/project/etc)"
-
-MQTT = {
-    "broker": "server.address",
-    "port": 1234,
-    "user": "user",
-    "password": "password"
-}
-```
+To use this, create a copy of config.toml.example and set the variables to suit your use cases.
 
 Guidance for the value of `USER_AGENT` can be found on https://api.met.no/doc/FAQ.

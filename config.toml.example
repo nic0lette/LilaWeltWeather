@@ -1,13 +1,6 @@
-[mqtt]
-client_id = "mqtt-weather"
-broker = "mqtt.example.com"
-port = 8883
-user = "user"
-password = "password"
-topic = "weather"
-
 [api]
 user_agent = "MQTT Weather (change-me@example.com"
+uk_met_api = "UK's MET API Key"
 
 # List of custom locations
 
