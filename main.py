@@ -130,7 +130,7 @@ def get_forecast(location):
     # parameter?) is "calling" it? Until this is fixed, suppress the warning here.
     # Issue: https://youtrack.jetbrains.com/issue/PY-52210
     # noinspection PyCallingNonCallable
-    if is_in_uk(location.display_name):
+    if hasattr(location, "in_uk") or is_in_uk(location.display_name):
         print(f"  UK forecast from the MET")
         return get_forecast_uk(location.lat, location.lon)
     print(f"  Forecast from NO MET")
