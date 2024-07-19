@@ -12,14 +12,19 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-FROM almalinux:latest
+FROM debian:bookworm-slim
 
-RUN dnf -y install python3 python3-pip
+RUN apt update && \
+    apt install -y python3 python3-pip
 COPY requirements.txt /tmp/
-RUN pip install --requirement /tmp/requirements.txt
-COPY weather.service /etc/systemd/system/
-RUN systemctl enable weather
+
+# Break system packages because it's just an image anyway
+RUN pip install --requirement /tmp/requirements.txt --break-system-packages
+
+#COPY weather.service /etc/systemd/system/
+#RUN systemctl enable weather
 COPY config.toml /app/
 COPY *.py /app/
 
-CMD [ "/sbin/init" ]
+WORKDIR /app
+CMD [ "/usr/bin/python3", "/app/main.py", "--config=config.toml" ]

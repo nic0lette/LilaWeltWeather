@@ -131,7 +131,9 @@ def get_forecast(location):
     # Issue: https://youtrack.jetbrains.com/issue/PY-52210
     # noinspection PyCallingNonCallable
     if is_in_uk(location.display_name):
+        print(f"  UK forecast from the MET")
         return get_forecast_uk(location.lat, location.lon)
+    print(f"  Forecast from NO MET")
     return get_forecast_no(location.lat, location.lon)
 
 
@@ -210,7 +212,7 @@ def main():
     geolocator = Nominatim(user_agent=global_config.api.user_agent)
 
     # Run the Flask app
-    app.run(port=1337)
+    app.run(host="0.0.0.0", port=1337)
 
 
 # Press the green button in the gutter to run the script.
